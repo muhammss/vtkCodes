@@ -48,4 +48,39 @@ class vtkFileRead():
 			varNames.append(self.cellData.GetArrayName(i))
 		return VarNames
 
-	
+	def GetValue(self,cell,var):
+		for i in range(0,self.cellData.GetNumberOfArrays()-1):
+			if var == self.cellData.GetArrayName(i):
+				array = self.cellData.GetArray(i)
+				return array.GetTuple(cell)
+			return ('Could not find')
+
+	def GetArray(self, var):
+		for i in range (0, self.cellData.GetNumberOfArrays()-1):
+			if var == self.cellData.GetArrayName(i):
+				return self.cellData.GetArray(i)
+
+	def vtkArrayToNumpy(self,vtkArray):
+		return vtkNP.vtk_to_numpy(vtkArray)
+
+    def CalcCenters(self):
+        centers=vtk.vtkCellCenters()
+        centers.AddInput(self.output)
+        centers.Update()
+        self.centersOutput=centers.GetOutput()
+        return self.centersOutput
+    
+    def GetCenter(self,cell):
+        return self.centersOutput.GetPoint(cell)
+    
+    def setDirectory(self,directory):
+        self.directory=directory
+    
+    def findFiles(self):
+        self.files=glob.glob(self.directory+'*.vtk')
+        print 'Found',len(self.files),'Files'
+        return self.files
+
+    
+
+
